@@ -84,26 +84,3 @@ class vec3:
   
   def unit_vector(self):
     return self/self.length()
-
-
-vektor1 = vec3(1,2,3)
-vektor2 = vec3(2,4,5)
-
-
-print(-vektor1)
-print(vektor1 + vektor2)
-print(f"vektor1[0]={vektor1[0]}")
-print(vektor1 * vektor2)
-print(vektor2 * vektor1)
-print(vektor1*6)
-print(3*vektor1)
-print(5.2*vektor1)
-print(vektor1*5.2)
-
-vektor1 -= vektor1 - vektor1 - vektor1
-
-print(vektor1)
-
-vektor1 = vec3(5,15,20)
-vektor1 /= 5
-print(vektor1)

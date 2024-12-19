@@ -1,30 +1,18 @@
-# Imports
 import math
+import vec3, color_utils
 
 # Image properties
 img_width = 256
 img_height = 256
 
+# TODO: Consider adding a progress bar
 with open("testImg.ppm", "w") as f:
   f.write(f"P3\n{img_width} {img_height}\n255\n")
 
   for i in range(img_height):
     for j in range(img_width):
-      r = (i + j)/(2* (img_width - 1))
-      g = math.sin(i*j + 3)**2
-      b = .5
+      # Generate a cool color map
+      color = vec3.vec3((i + j)/(2* (img_width - 1)), math.sin(i*j + 3)**2, .5)
+      color_utils.write_color(f, color)
 
-      ir = int(255.999 * r)
-      ig = int(255.999 * g)
-      ib = int(255.999 * b)
-
-      f.write(f"{ir} {ig} {ib}\n")
-  
   f.close()
-
-# from tqdm import tqdm
-# import time
-
-# for i in tqdm(range(100)):
-#     time.sleep(0.1)  # Simulate some work
-
