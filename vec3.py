@@ -81,6 +81,9 @@ class vec3:
     return vec3(self[1] * other[2] - self[2] * other[1],
                 self[2] * other[0] - self[0] * other[2],
                 self[0] * other[1] - self[1] * other[0])
+  
+  def unit_vector(self):
+    return self/self.length()
 
 
 vektor1 = vec3(1,2,3)
