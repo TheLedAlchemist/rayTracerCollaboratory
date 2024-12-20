@@ -24,6 +24,7 @@ port_width = port_height * (float(img_width)/img_height)
 with open("testImg.ppm", "w") as f:
   f.write(f"P3\n{img_width} {img_height}\n255\n")
 
+  # Depending on what the guide says, consider casting img_height to an int
   for i in range(img_height):
     for j in range(img_width):
       # Generate a cool color map
