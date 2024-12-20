@@ -2,20 +2,26 @@ import math
 import vec3, color_utils
 import argparse
 
-parser = argparse.ArgumentParser(
-  prog="raytrace.py",
-  description="This is a graphical raytracer written collaboratively by Matthew Gill and Jacob Shavel.\nAll code is interpreted from\
-  the guide \"Ray Tracing in One Weekend\" by Peter Shirley, Trevor David Black, and Steve Hollasch."
-)
+# parser = argparse.ArgumentParser(
+#   prog="raytrace.py",
+#   description="This is a graphical raytracer written collaboratively by Matthew Gill and Jacob Shavel.\nAll code is interpreted from\
+#   the guide \"Ray Tracing in One Weekend\" by Peter Shirley, Trevor David Black, and Steve Hollasch."
+# )
 
-parser.add_argument('--outputfname', default="testImg.ppm", type=str)
+# parser.add_argument('--outputfname', default="testImg.ppm", type=str)
 
 # Image properties
 img_width = 256
-img_height = 256
+aspect_ratio = 16.0 / 9.0
+
+img_height = img_width / aspect_ratio
+img_height = img_height if img_height >= 1 else 1
+
+port_height = 2.0
+port_width = port_height * (float(img_width)/img_height)
 
 # TODO: Consider adding a progress bar
-with open(parser.parse_args(["--outputfname"]), "w") as f:
+with open("testImg.ppm", "w") as f:
   f.write(f"P3\n{img_width} {img_height}\n255\n")
 
   for i in range(img_height):
