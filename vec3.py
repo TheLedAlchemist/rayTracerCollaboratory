@@ -72,10 +72,10 @@ class vec3:
             + self.z() * other.z())
   
   def length_squared(self):
-    self.dot(self)
+    return self.dot(self)
 
   def length(self):
-    math.sqrt(self.length_squared())
+    return math.sqrt(self.length_squared())
 
   def cross(self,other):
     return vec3(self[1] * other[2] - self[2] * other[1],
