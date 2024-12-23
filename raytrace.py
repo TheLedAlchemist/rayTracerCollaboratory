@@ -11,12 +11,29 @@ import argparse
 
 # parser.add_argument('--outputfname', default="testImg.ppm", type=str)
 
+def did_hit_sphere(center: vec3.vec3, radius: float, r: ray.ray):
+  o_to_c = center - r.origin()
+  a = vec3.vec3.dot(r.dir(), r.dir())
+  b = -2.0 * vec3.vec3.dot(r.dir(), o_to_c)
+  c = vec3.vec3.dot(o_to_c, o_to_c) - radius * radius
+  discrim = b*b - 4*a*c
+  
+  if(discrim < 0):
+    return -1.0
+  else:
+    return (-1.0*b - math.sqrt(discrim))/(2.0*a)
+
 
 def ray_color(r: ray.ray):
-  # # Generate a cool color map
+  t = did_hit_sphere(vec3.vec3(0,0, -1), 0.5, r)
+  if(t > 0.0):
+    normal = (r.at(t) - vec3.vec3(0, 0, -1)).unit_vector()
+    return 0.5*vec3.vec3(normal.x() + 1, normal.y() + 1, normal.z() + 1)
+
+  # Otherwise, Generate a cool color map
   unitdir = r.dir().unit_vector()
   
-  color = vec3.vec3( (unitdir.x() + unitdir.y())/2, math.sin(aspect_ratio*unitdir.x()*unitdir.y())**2, .75)
+  color = vec3.vec3( (unitdir.x() + unitdir.y())/2, math.sin(abs(unitdir.x())*abs(unitdir.y())*img_width)**2, .75)
   return color
 
 ## Image properties

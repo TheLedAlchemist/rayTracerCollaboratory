@@ -66,10 +66,10 @@ class vec3:
   def __isub__(self, other):
     return self.__sub__(other)
 
-  def dot(self, other):
-    return (self.x() * other.x()
-            + self.y() * other.y()
-            + self.z() * other.z())
+  def dot(a, b):
+    return (float(a.x()) * b.x()
+            + a.y() * b.y()
+            + a.z() * b.z())
   
   def length_squared(self):
     return self.dot(self)
