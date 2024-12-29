@@ -1,5 +1,4 @@
-import ray
-import vec3
+import ray, vec3, interval
 from abc import ABC, abstractmethod
 import math
 
@@ -19,7 +18,7 @@ class hit_record:
 
 class hittable(ABC):
   @abstractmethod
-  def hit(self, r: ray.ray, ray_tmin: float, ray_tmax: float, rec: hit_record) -> bool:
+  def hit(self, r: ray.ray, ray_t: interval.interval, rec: hit_record) -> bool:
     pass
 
 class sphere(hittable):
@@ -27,7 +26,7 @@ class sphere(hittable):
     self.center = center
     self.radius = 0.0 if radius < 0 else radius
 
-  def hit(self, r: ray.ray, ray_tmin: float, ray_tmax: float, rec: hit_record) -> bool:
+  def hit(self, r: ray.ray, ray_t: interval.interval, rec: hit_record) -> bool:
     o_to_c = self.center - r.origin()
     a = r.dir().length_squared()
     h = vec3.vec3.dot(r.dir(), o_to_c)
@@ -40,9 +39,9 @@ class sphere(hittable):
     root_discrim = math.sqrt(discrim)
 
     root = (h - root_discrim)/a
-    if (root <= ray_tmin or ray_tmax <= root):
+    if (not ray_t.surrounds(root)):
       root = (h + root_discrim) / a
-      if (root <= ray_tmin or ray_tmax <= root):
+      if (not ray_t.surrounds(root)):
         return False
 
     rec.t = root

@@ -2,6 +2,7 @@ import math
 import vec3, color_utils, hittable, hittable_list
 import ray
 import argparse
+import interval
 
 # parser = argparse.ArgumentParser(
 #   prog="raytrace.py",
@@ -22,7 +23,7 @@ degrees_to_radians = lambda degrees : degrees * pi / 180.0
 def ray_color(r: ray.ray, world: hittable.hittable):
   rec = hittable.hit_record()
 
-  if(world.hit(r, 0, infinity, rec)):
+  if(world.hit(r, interval.interval(0, infinity), rec)):
     return 0.5* (rec.normal + vec3.vec3(1, 1, 1))
 
   # Otherwise, Generate a cool color map background
@@ -35,7 +36,7 @@ if __name__ == "__main__":
 
   ## Image properties
   aspect_ratio = 16.0 / 9.0
-  img_width = 256
+  img_width = 400
 
   # Calculate the image height and ensure it's at least one
   img_height = int(img_width / aspect_ratio)
