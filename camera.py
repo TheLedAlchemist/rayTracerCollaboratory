@@ -1,25 +1,32 @@
-import vec3, ray, interval, hittable, color_utils
+import vec3, ray, interval, hittable, color_utils, raytrace
 
 class camera:
   def __init__(self):
     self.aspect_ratio = 1.0
     self.image_width = 100
+    self.samples_per_pixel = 10
 
   def render(self, world: hittable.hittable) -> None:
     self.initialize()
 
     with open("rayCastTest.ppm", "w") as f:
+      # Write the file header
       f.write(f"P3\n{self.image_width} {self.image_height}\n255\n")
 
+      # Begin casting rays into the scene
       for j in range(self.image_height):
         for i in range(self.image_width):
-          pixel_center = self.pixel_00_loc + (i * self.pixel_delta_u) + (j * self.pixel_delta_v)
-          ray_direction = pixel_center - self.center
 
-          r = ray.ray(origin=self.center, direction=ray_direction)
+          pixel_color = vec3.vec3(0, 0, 0)
 
-          pixel_color = self.ray_color(r, world)
-          color_utils.write_color(f, pixel_color)
+          for sample in range(self.samples_per_pixel):
+            r = self.get_ray(i, j)
+            pixel_color += self.ray_color(r, world)
+
+          color_utils.write_color(f, self.pixel_samples_scale * pixel_color)
+
+        if ((float(j) / self.image_height) % 0.1) > 0.09:
+          print(float(j)/self.image_height) 
 
       f.close()
 
@@ -28,6 +35,9 @@ class camera:
     # Calculate the image height and ensure it's at least one
     self.image_height = int(self.image_width / self.aspect_ratio)
     self.image_height = self.image_height if self.image_height >= 1 else 1
+
+    # Antialiasing number of samples
+    self.pixel_samples_scale = 1.0 / self.samples_per_pixel
 
     # Initialize the camera's origin
     self.center = vec3.vec3(0, 0, 0)
@@ -48,6 +58,19 @@ class camera:
     # Calculate location of upper-leftmost pixel
     port_upper_left = self.center - vec3.vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2
     self.pixel_00_loc = port_upper_left + 0.5 * (self.pixel_delta_u + self.pixel_delta_v)
+
+  def get_ray(self, i: int, j: int) -> ray.ray:
+    offset = self.sample_square()
+    pixel_sample = self.pixel_00_loc + ((i + offset.x()) * self.pixel_delta_u) + ((j + offset.y()) * self.pixel_delta_v)
+
+    ray_origin = self.center
+    ray_direction = pixel_sample - ray_origin
+
+    return ray.ray(origin=self.center, direction=ray_direction) 
+
+  def sample_square(self) -> vec3.vec3:
+    # The following returns a point within a unit square centered at (0, 0)
+    return vec3.vec3(raytrace.random_double() - 0.5, raytrace.random_double() - 0.5, 0)
 
   def ray_color(self, r: ray.ray, world: hittable.hittable):
     rec = hittable.hit_record()

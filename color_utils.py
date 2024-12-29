@@ -1,4 +1,4 @@
-import vec3
+import vec3, interval
 from contextlib import redirect_stdout
 
 """
@@ -9,9 +9,10 @@ def write_color(f, color: vec3):
   g = color.y()
   b = color.z()
 
-  rb = int(255.999 * r)
-  gb = int(255.999 * g)
-  bb = int(255.999 * b)
+  intensity = interval.interval(0.000, 0.999)
+  rb = int(256 * intensity.clamp(r))
+  gb = int(256 * intensity.clamp(g))
+  bb = int(256 * intensity.clamp(b))
 
   # Redirect the standard output to the provided stream
   with redirect_stdout(f):
