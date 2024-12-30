@@ -25,6 +25,6 @@ class hittable_list(hittable.hittable):
         rec.t = temp_rec.t
         rec.normal = temp_rec.normal
         rec.front_face = temp_rec.front_face
-        rec.p = temp_rec.front_face
+        rec.p = temp_rec.p
     
     return hit_anything

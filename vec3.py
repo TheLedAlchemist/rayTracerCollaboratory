@@ -73,6 +73,10 @@ class vec3:
   
   def length_squared(self):
     return self.dot(self)
+  
+  def random(self, min = 0.0, max = 1.0):
+    import raytrace
+    return vec3(raytrace.random_double(min, max), raytrace.random_double(min, max), raytrace.random_double(min, max))
 
   def length(self):
     return math.sqrt(self.length_squared())
@@ -84,3 +88,19 @@ class vec3:
   
   def unit_vector(self):
     return self/self.length()
+  
+  def random_unit_vector(self):
+    while(True):
+      p = self.random(-1, 1)
+      lensq = p.length_squared()
+
+      if(lensq > 1e-100 and lensq <= 1):
+        return p/math.sqrt(lensq)
+      
+  def random_on_hemisphere(self, normal):
+    on_unit_sphere = self.random_unit_vector()
+    if self.dot(normal) > 0.0:
+      return on_unit_sphere
+    else:
+      return -on_unit_sphere
+

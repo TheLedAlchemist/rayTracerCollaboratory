@@ -5,6 +5,7 @@ class camera:
     self.aspect_ratio = 1.0
     self.image_width = 100
     self.samples_per_pixel = 10
+    self.max_depth = 10
 
   def render(self, world: hittable.hittable) -> None:
     self.initialize()
@@ -21,7 +22,7 @@ class camera:
 
           for sample in range(self.samples_per_pixel):
             r = self.get_ray(i, j)
-            pixel_color += self.ray_color(r, world)
+            pixel_color += self.ray_color(r, self.max_depth, world)
 
           color_utils.write_color(f, self.pixel_samples_scale * pixel_color)
 
@@ -72,14 +73,20 @@ class camera:
     # The following returns a point within a unit square centered at (0, 0)
     return vec3.vec3(raytrace.random_double() - 0.5, raytrace.random_double() - 0.5, 0)
 
-  def ray_color(self, r: ray.ray, world: hittable.hittable):
+  def ray_color(self, r: ray.ray, depth: int, world: hittable.hittable):
+    if depth <= 0:
+      return vec3.vec3(0, 0, 0)
+    
     rec = hittable.hit_record()
 
-    if(world.hit(r, interval.interval(0, float('inf')), rec)):
-      return 0.5* (rec.normal + vec3.vec3(1, 1, 1))
+    # If an object was hit, continue scattering and decrement depth
+    if(world.hit(r, interval.interval(0.001, float('inf')), rec)):
+      direction = vec3.vec3().random_on_hemisphere(rec.normal)
+      
+      return 0.5 * self.ray_color(ray.ray(rec.p, direction), depth - 1, world)
 
     # Otherwise, Generate a cool color map background
     # unitdir = r.dir().unit_vector()
     # color = vec3.vec3( (unitdir.x() + unitdir.y())/2, math.sin(abs(unitdir.x())*abs(unitdir.y())*img_width)**2, .75)
-    color = vec3.vec3(0.66, 0.66, 0.66)
+    color = vec3.vec3(0.77, 0.77, 0.77)
     return color

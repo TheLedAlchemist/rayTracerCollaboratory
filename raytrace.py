@@ -22,6 +22,7 @@ if __name__ == "__main__":
   cam.aspect_ratio = 16.0/9.0
   cam.image_width = 400
   cam.samples_per_pixel = 100
+  cam.max_depth = 50
 
   print("[ Render ] Beginning image render")
   cam.render(world)

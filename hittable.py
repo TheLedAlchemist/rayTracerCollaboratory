@@ -13,7 +13,7 @@ class hit_record:
     Sets the normal vector. Outward_normal is assumed to have unit length.
     """
 
-    self.front_face = r.direc.dot(outward_normal) < 0.0
+    self.front_face = r.direction.dot(outward_normal) < 0.0
     self.normal = outward_normal if self.front_face else -outward_normal
 
 class hittable(ABC):
@@ -27,9 +27,9 @@ class sphere(hittable):
     self.radius = 0.0 if radius < 0 else radius
 
   def hit(self, r: ray.ray, ray_t: interval.interval, rec: hit_record) -> bool:
-    o_to_c = self.center - r.origin()
+    o_to_c = self.center - r.origin()    
     a = r.dir().length_squared()
-    h = vec3.vec3.dot(r.dir(), o_to_c)
+    h = r.dir().dot(o_to_c)
     c = o_to_c.length_squared() - self.radius * self.radius
     discrim = h*h - a*c
     
