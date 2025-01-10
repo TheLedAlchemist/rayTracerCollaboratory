@@ -2,9 +2,15 @@ import ray, vec3, interval
 from abc import ABC, abstractmethod
 import math
 
+class material(ABC):
+  @abstractmethod
+  def scatter(r_in: ray.ray, rec, attenuation, scattered) -> bool:
+    return False
+
 class hit_record:
   p = vec3.vec3()
   normal = vec3.vec3()
+  mat: material
   t = 0.0
   front_face: bool
 
@@ -21,10 +27,49 @@ class hittable(ABC):
   def hit(self, r: ray.ray, ray_t: interval.interval, rec: hit_record) -> bool:
     pass
 
+class lambertian(material):
+  def __init__(self, albedo: vec3.vec3) -> None:
+    self.albedo = albedo
+
+  def scatter(self, r_in: ray.ray, rec: hit_record, attenuation: vec3.vec3, scattered: ray.ray) -> bool:
+    scatter_direction = rec.normal + vec3.vec3().random_unit_vector()
+    
+    # If the sum (scatter_direction) has a magnitude almost equal to 0, reset the scatter direction for safety
+    if(scatter_direction.near_zero()):
+      scatter_direction = rec.normal
+
+    scattered.orig = rec.p
+    scattered.direction = scatter_direction
+
+    attenuation.x = self.albedo.x
+    attenuation.y = self.albedo.y
+    attenuation.z = self.albedo.z
+
+    return True
+  
+class metal(material):
+  def __init__(self, albedo: vec3.vec3, fuzz: float) -> None:
+    self.albedo = albedo
+    self.fuzz = 1.0 if fuzz > 1.0 else fuzz
+
+  def scatter(self, r_in: ray.ray, rec: hit_record, attenuation: vec3.vec3, scattered: ray.ray) -> bool:
+    reflected = r_in.dir().reflect(rec.normal)
+    reflected = reflected.unit_vector() + (self.fuzz * vec3.vec3().random_unit_vector())
+
+    scattered.orig = rec.p
+    scattered.direction = reflected
+
+    attenuation.x = self.albedo.x
+    attenuation.y = self.albedo.y
+    attenuation.z = self.albedo.z
+
+    return scattered.direction.dot(rec.normal) > 0
+
 class sphere(hittable):
-  def __init__(self, center: vec3.vec3, radius: float):
+  def __init__(self, center: vec3.vec3, radius: float, mat: material):
     self.center = center
     self.radius = 0.0 if radius < 0 else radius
+    self.mat = mat
 
   def hit(self, r: ray.ray, ray_t: interval.interval, rec: hit_record) -> bool:
     o_to_c = self.center - r.origin()    
@@ -48,5 +93,6 @@ class sphere(hittable):
     rec.p = r.at(rec.t)
     outward_normal = (rec.p - self.center) / self.radius
     rec.set_face_normal(r, outward_normal)
+    rec.mat = self.mat
 
     return True

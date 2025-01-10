@@ -74,6 +74,10 @@ class vec3:
   def length_squared(self):
     return self.dot(self)
   
+  def near_zero(self) -> bool:
+    s = 1e-4
+    return math.fabs(self[0] < s) and math.fabs(self[1] < s) and math.fabs(self[2] < s)
+  
   def random(self, min = 0.0, max = 1.0):
     import raytrace
     return vec3(raytrace.random_double(min, max), raytrace.random_double(min, max), raytrace.random_double(min, max))
@@ -103,4 +107,7 @@ class vec3:
       return on_unit_sphere
     else:
       return -on_unit_sphere
+    
+  def reflect(self, normal):
+    return self - (2*self.dot(normal))*normal
 

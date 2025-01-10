@@ -14,8 +14,15 @@ if __name__ == "__main__":
   ## World
   world = hittable_list.hittable_list()
 
-  world.add(hittable.sphere(vec3.vec3(0, 0, -1), 0.5))
-  world.add(hittable.sphere(vec3.vec3(0, -100.5, -1), 100))
+  material_ground = hittable.lambertian(vec3.vec3(0.8, 0.8, 0.0))
+  material_center = hittable.lambertian(vec3.vec3(0.1, 0.2, 0.5))
+  material_left = hittable.metal(vec3.vec3(0.8, 0.8, 0.8), 0.3)
+  material_right = hittable.metal(vec3.vec3(0.8, 0.6, 0.2), 1.0)
+
+  world.add(hittable.sphere(vec3.vec3( 0.0, -100.5, -1.0), 100.0, material_ground))
+  world.add(hittable.sphere(vec3.vec3( 0.0,    0.0, -1.2),   0.5, material_center))
+  world.add(hittable.sphere(vec3.vec3(-1.0,    0.0, -1.0),   0.5, material_left))
+  world.add(hittable.sphere(vec3.vec3( 1.0,    0.0, -1.0),   0.5, material_right))
 
   cam = camera.camera()
 

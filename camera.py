@@ -27,7 +27,7 @@ class camera:
           color_utils.write_color(f, self.pixel_samples_scale * pixel_color)
 
         if ((float(j) / self.image_height) % 0.1) > 0.09:
-          print(float(j)/self.image_height) 
+          print(f"{(float(j)/self.image_height) * 100.0: .2f}% complete!") 
 
       f.close()
 
@@ -81,9 +81,12 @@ class camera:
 
     # If an object was hit, continue scattering and decrement depth
     if(world.hit(r, interval.interval(0.001, float('inf')), rec)):
-      direction = vec3.vec3().random_on_hemisphere(rec.normal)
-      
-      return 0.5 * self.ray_color(ray.ray(rec.p, direction), depth - 1, world)
+      scattered = ray.ray()
+      attenuation = vec3.vec3()
+
+      if(rec.mat.scatter(r, rec, attenuation, scattered)):
+        return attenuation * self.ray_color(scattered, depth-1, world)
+      return vec3.vec3(0, 0, 0)
 
     # Otherwise, Generate a cool color map background
     # unitdir = r.dir().unit_vector()
