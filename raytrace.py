@@ -16,19 +16,23 @@ if __name__ == "__main__":
 
   material_ground = hittable.lambertian(vec3.vec3(0.8, 0.8, 0.0))
   material_center = hittable.lambertian(vec3.vec3(0.1, 0.2, 0.5))
-  material_left = hittable.metal(vec3.vec3(0.8, 0.8, 0.8), 0.3)
+  
+  material_left = hittable.dielectric(1.50)
+  material_bubble = hittable.dielectric(1.0 / 1.5)
+
   material_right = hittable.metal(vec3.vec3(0.8, 0.6, 0.2), 1.0)
 
   world.add(hittable.sphere(vec3.vec3( 0.0, -100.5, -1.0), 100.0, material_ground))
   world.add(hittable.sphere(vec3.vec3( 0.0,    0.0, -1.2),   0.5, material_center))
   world.add(hittable.sphere(vec3.vec3(-1.0,    0.0, -1.0),   0.5, material_left))
+  world.add(hittable.sphere(vec3.vec3(-1.0,    0.0, -1.0),   0.4, material_bubble))
   world.add(hittable.sphere(vec3.vec3( 1.0,    0.0, -1.0),   0.5, material_right))
 
   cam = camera.camera()
 
   cam.aspect_ratio = 16.0/9.0
-  cam.image_width = 400
-  cam.samples_per_pixel = 100
+  cam.image_width = 1000
+  cam.samples_per_pixel = 25
   cam.max_depth = 50
 
   print("[ Render ] Beginning image render")

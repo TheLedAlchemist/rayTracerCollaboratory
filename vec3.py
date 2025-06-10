@@ -110,4 +110,11 @@ class vec3:
     
   def reflect(self, normal):
     return self - (2*self.dot(normal))*normal
+  
+  def refract(self, uv, n, etai_over_etahat):
+    cos_theta = min( (- uv).dot(n), 1.0)
+    r_out_perp = etai_over_etahat * (uv + cos_theta * n)
+    r_out_parallel = - math.sqrt( abs(1.0 - r_out_perp.length_squared())) * n
+
+    return r_out_parallel + r_out_perp
 

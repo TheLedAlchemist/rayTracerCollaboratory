@@ -2,6 +2,8 @@ import ray, vec3, interval
 from abc import ABC, abstractmethod
 import math
 
+import random
+
 class material(ABC):
   @abstractmethod
   def scatter(r_in: ray.ray, rec, attenuation, scattered) -> bool:
@@ -64,6 +66,39 @@ class metal(material):
     attenuation.z = self.albedo.z
 
     return scattered.direction.dot(rec.normal) > 0
+  
+class dielectric(material):
+  def __init__(self, refraction_index: float):
+    self.refraction_index = refraction_index
+
+  def scatter(self, r_in: ray.ray, rec: hit_record, attenuation: vec3.vec3, scattered: ray.ray):
+    attenuation.vector = vec3.vec3(1.0, 1.0, 1.0)
+    ri = 1.0 / self.refraction_index if rec.front_face > 0 else float(self.refraction_index)
+
+    unit_direction = r_in.direction.unit_vector()
+
+    cos_theta = min((-unit_direction).dot(rec.normal), 1.0)
+    sin_theta = math.sqrt(1.0 - cos_theta * cos_theta)
+
+    cannot_refract = ri * sin_theta > 1.0
+    
+    direction = None
+
+    if(cannot_refract or self.reflectance(cos_theta, ri) > random.random()):
+      direction = unit_direction.reflect(rec.normal)
+    else:
+      direction = unit_direction.refract(unit_direction, rec.normal, ri)
+
+    scattered.orig = rec.p
+    scattered.direction = direction
+
+    return True
+  
+  def reflectance(self, cosine: float, refraction_index: float):
+    """Schlick's approximation for reflectance"""
+    r0 = (1 - refraction_index) / (1 + refraction_index)
+    r0 = r0 ** 2
+    return r0 + (1 - r0) * (1 - cosine) ** 5
 
 class sphere(hittable):
   def __init__(self, center: vec3.vec3, radius: float, mat: material):
